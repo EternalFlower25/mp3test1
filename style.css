@@ -32,10 +32,10 @@
             transition: all 0.3s;
         }
 
-        .theme-classic { background: linear-gradient(45deg, #161010, #1a1a1a); color: #00ff41; }
+        .theme-classic { background: linear-gradient(45deg, #0f0f0f, #1a1a1a); color: #ff00ff; }
         .theme-modern { background: linear-gradient(45deg, #7980a0, #756386); color: white; }
         .theme-retro { background: linear-gradient(45deg, #ff6b6b, #ffa500); color: #fff; }
-        .theme-neon { background: linear-gradient(45deg, #0f0f0f, #1a1a1a); color: #ff00ff; }
+        .theme-neon { background: linear-gradient(45deg, #161010, #1a1a1a); color: #00ff41;  }
 
         /* Contenedor principal */
         .player-container {
@@ -756,3 +756,4 @@
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(233,30,99,0.4);
 }
+
