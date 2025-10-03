@@ -5,7 +5,7 @@
         let actualDuration = 0;
         let currentLyricIndex = 0;
         let displayMode = 'lyrics';
-        let currentTheme = 'classic';
+        let currentTheme = 'neon';
         let isExpanded = false;
         let audioFiles = [];
 
@@ -874,4 +874,5 @@ function shareViaEmail(url) {
 
 
         window.onload = initPlayer;
+
 
