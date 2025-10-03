@@ -78,21 +78,6 @@ function loadAudioFiles(event) {
         }
     });
     
-    //Hola mi niña :3
-    //Quiero decirte que
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
     updatePlaylist();
     
     // Auto selecciona la primera canción cargada si hay archivos
@@ -660,19 +645,6 @@ function editDedication() {
     form.innerHTML = `
         <h3 style="text-align: center; margin-bottom: 20px;">✏️ Dedicatoria para: "${currentSong.title}"</h3>
         
-        <div style="background: rgba(0,255,255,0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-            <strong>Información:</strong><br>
-            Canción: ${currentSong.title}<br>
-            Artista: ${currentSong.artist}<br>
-            Duración: ${formatTime(duration)}<br>
-            Frases actuales: ${dedication.lines.length}<br>
-            Tiempo por frase: ~${Math.round(duration / Math.max(dedication.lines.length, 1))}s
-        </div>
-        
-        <div style="background: rgba(255,215,0,0.1); padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 12px;">
-            <strong>Nota:</strong> Esta dedicatoria es exclusiva para "${currentSong.title}". Cada canción puede tener su propia dedicatoria personalizada.
-        </div>
-        
         <label style="display: block; margin: 10px 0 5px;">Título de la Dedicatoria:</label>
         <input type="text" id="editTitle" value="${dedication.title}" style="width: 100%; padding: 8px; border: 1px solid #00ffff; background: rgba(0,0,0,0.5); color: #00ffff; border-radius: 5px;">
         
@@ -902,3 +874,4 @@ function shareViaEmail(url) {
 
 
         window.onload = initPlayer;
+
