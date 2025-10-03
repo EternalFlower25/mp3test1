@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>MP3 Virtual Player Pro - Expandible</title>
+
+</head>
+<body>
+    <!-- Botón externo para cargar música -->
+    <div class="external-controls">
+        <label class="upload-btn">
+            🎵 Subir Música
+            <input type="file" accept="audio/*" multiple onchange="loadAudioFiles(event)" id="externalAudioInput">
+        </label>
+        <button class="edit-dedication-btn" onclick="editDedication()">✏️ Editar Dedicatoria</button>
+        <button class="share-btn" onclick="generateShareableLink()">💕 Compartir Dedicatoria</button>
+    </div>
+    
+
+    <div class="theme-selector">
+        <button class="theme-btn theme-classic" onclick="changeTheme('classic')">Clásico</button>
+        <button class="theme-btn theme-modern" onclick="changeTheme('modern')">Moderno</button>
+        <button class="theme-btn theme-retro" onclick="changeTheme('retro')">Retro</button>
+        <button class="theme-btn theme-neon" onclick="changeTheme('neon')">Neon</button>
+    </div>
+
+    <div class="player-container compact" id="playerContainer">
+        <div class="mp3-player classic" id="mp3Player">
+            <div class="mode-indicator" id="modeIndicator"></div>
+            
+            <div class="screen">
+                <div class="display">
+                    <div class="song-info">
+                        <div class="song-title" id="songTitle">Selecciona una canción</div>
+                        <div class="artist-name" id="artistName">Artista</div>
+                    </div>
+                    
+                    <div class="visualizer" id="visualizer"></div>
+                    
+                    <div class="progress-section">
+                        <div class="progress-bar" onclick="seekTo(event)">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="time-display">
+                            <span id="currentTime">0:00</span>
+                            <span id="totalTime">0:00</span>
+                        </div>
+                    </div>
+
+                    <div class="lyrics-container" id="lyricsContainer">
+                        <div class="lyrics-line">♪ Letras aparecerán aquí ♪</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="control-btn" onclick="previousTrack()" title="Anterior">⏮</button>
+                <button class="control-btn play-btn" onclick="togglePlay()" id="playBtn" title="Reproducir">▶</button>
+                <button class="control-btn" onclick="nextTrack()" title="Siguiente">⏭</button>
+                <button class="control-btn expand-btn" onclick="toggleExpanded()" id="expandBtn" title="Modo Expandido">⛶</button>
+            </div>
+
+            <div class="volume-control">
+                <input type="range" min="0" max="100" value="70" class="volume-slider" id="volumeSlider" onchange="changeVolume()">
+            </div>
+
+            <div class="wheel" onclick="cycleDisplayMode()" title="Cambiar modo de pantalla">
+                <div class="wheel-center"></div>
+            </div>
+
+            <div class="playlist">
+                <div class="playlist-item active" onclick="selectTrack(0)"></div>
+                <div class="playlist-item" onclick="selectTrack(1)"></div>
+                <div class="playlist-item" onclick="selectTrack(2)"></div>
+                <div class="playlist-item" onclick="selectTrack(3)"></div>
+            </div>
+        </div>
+
+        <div class="lyrics-panel classic" id="lyricsPanel">
+            <div class="dedication-header">
+                <input type="text" id="dedicationTitle" value="Te Quiero Tanto" class="dedication-title-input">
+                <div class="dedication-subtitle">Desde Mi Corazón</div>
+            </div>
+            
+            <div class="dedication-lines" id="dedicationLines">
+                <!-- Las frases aparecerán aquí automáticamente -->
+            </div>
+            
+            <div class="dedication-controls">
+                <button onclick="editDedication()" class="edit-btn">✏️ Editar Dedicatoria</button>
+            </div>
+        </div>
+        
+        
+    </div>
+
+    <audio id="audioPlayer" preload="metadata" onloadedmetadata="onAudioLoaded()" ontimeupdate="onTimeUpdate()" onended="onSongEnd()">
+        <source src="" type="audio/mpeg">
+    </audio>
+    <script src="script.js"></script>
+</body>
+</html>
