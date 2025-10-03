@@ -754,8 +754,10 @@ function loadDedicationsFromUrl() {
     
     if (dedicationsParam) {
         try {
-            const decodedDedications = JSON.parse(atob(dedicationsParam));
+            console.log('🔍 Cargando dedicatorias desde URL...'); // Debug
+            const decodedDedications = JSON.parse(decodeURIComponent(escape(atob(dedicationsParam))));
             songDedications = { ...decodedDedications };
+            console.log('✅ Dedicatorias cargadas:', songDedications); // Debug
             
             // Mostrar mensaje de bienvenida
             setTimeout(() => {
@@ -763,30 +765,45 @@ function loadDedicationsFromUrl() {
             }, 1000);
             
         } catch (error) {
-            console.log('Error cargando dedicatorias de URL');
+            console.error('❌ Error cargando dedicatorias de URL:', error); // Debug
         }
     }
 }
 
+
 // Generar enlace compartible con dedicatorias
 function generateShareableLink() {
+    console.log('🔍 Iniciando generateShareableLink...'); // Debug
+    
     // Verificar que hay dedicatorias personalizadas
     const hasCustomDedications = Object.keys(songDedications).length > 0;
+    console.log('📊 Dedicatorias encontradas:', hasCustomDedications, songDedications); // Debug
     
     if (!hasCustomDedications) {
         alert('💡 Primero debes escribir una dedicatoria personalizada.\n\nHaz clic en "✏️ Editar Dedicatoria" para empezar.');
         return;
     }
     
-    // Codificar dedicatorias en base64
-    const dedicationsEncoded = btoa(JSON.stringify(songDedications));
-    
-    // Generar URL con dedicatorias
-    const currentUrl = window.location.origin + window.location.pathname;
-    const shareableUrl = `${currentUrl}?d=${dedicationsEncoded}`;
-    
-    // Mostrar modal con opciones para compartir
-    showShareModal(shareableUrl);
+    try {
+        // Codificar dedicatorias en base64 (con manejo de errores)
+        const dedicationsString = JSON.stringify(songDedications);
+        console.log('📝 JSON a codificar:', dedicationsString); // Debug
+        
+        const dedicationsEncoded = btoa(unescape(encodeURIComponent(dedicationsString)));
+        console.log('🔐 Codificación exitosa:', dedicationsEncoded.substring(0, 50) + '...'); // Debug
+        
+        // Generar URL con dedicatorias
+        const currentUrl = window.location.origin + window.location.pathname;
+        const shareableUrl = `${currentUrl}?d=${dedicationsEncoded}`;
+        console.log('🔗 URL generada:', shareableUrl); // Debug
+        
+        // Mostrar modal con opciones para compartir
+        showShareModal(shareableUrl);
+        
+    } catch (error) {
+        console.error('❌ Error en generateShareableLink:', error); // Debug
+        alert(`❌ Error al generar enlace: ${error.message}\n\nIntenta escribir una dedicatoria más simple.`);
+    }
 }
 
 function showShareModal(shareUrl) {
@@ -878,6 +895,7 @@ function shareViaEmail(url) {
     const emailUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.open(emailUrl);
 }
+
 
 
 
