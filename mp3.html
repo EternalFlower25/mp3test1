@@ -20,14 +20,14 @@
     
 
     <div class="theme-selector">
-        <button class="theme-btn theme-classic" onclick="changeTheme('classic')">Clásico</button>
+        <button class="theme-btn theme-classic" onclick="changeTheme('neon')">Neon</button>
         <button class="theme-btn theme-modern" onclick="changeTheme('modern')">Moderno</button>
         <button class="theme-btn theme-retro" onclick="changeTheme('retro')">Retro</button>
-        <button class="theme-btn theme-neon" onclick="changeTheme('neon')">Neon</button>
+        <button class="theme-btn theme-neon" onclick="changeTheme('classic')">Clásico</button>
     </div>
 
     <div class="player-container compact" id="playerContainer">
-        <div class="mp3-player classic" id="mp3Player">
+        <div class="mp3-player neon" id="mp3Player">
             <div class="mode-indicator" id="modeIndicator"></div>
             
             <div class="screen">
@@ -78,7 +78,7 @@
             </div>
         </div>
 
-        <div class="lyrics-panel classic" id="lyricsPanel">
+        <div class="lyrics-panel neon" id="lyricsPanel">
             <div class="dedication-header">
                 <input type="text" id="dedicationTitle" value="Te Quiero Tanto" class="dedication-title-input">
                 <div class="dedication-subtitle">Desde Mi Corazón</div>
@@ -102,3 +102,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
