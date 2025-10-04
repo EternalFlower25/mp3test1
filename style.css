@@ -815,10 +815,32 @@ body {
         margin: 0 auto;
     }
     
-    /* Ajustar líneas de dedicatoria para móvil */
+    /* Centrar mejor el contenido del panel */
     .dedication-lines {
         max-height: 280px !important;
-        padding-right: 5px;
+        padding: 0 20px !important;
+        text-align: center !important;
+    }
+    
+    /* Líneas de dedicatoria centradas */
+    .dedication-line {
+        font-size: 14px !important;
+        padding: 10px 0 !important;
+        line-height: 1.4 !important;
+        text-align: center !important;
+    }
+    
+    .dedication-line.current {
+        font-size: 16px !important;
+    }
+    
+    /* Tiempo centrado */
+    .dedication-time {
+        font-size: 9px !important;
+        float: none !important;
+        display: block !important;
+        text-align: center !important;
+        margin: 5px auto 0 auto !important;
     }
     
     /* Botones externos - reposicionar */
@@ -851,23 +873,8 @@ body {
     .dedication-title-input {
         font-size: 20px !important;
     }
-    
-    /* Líneas de dedicatoria más legibles */
-    .dedication-line {
-        font-size: 14px !important;
-        padding: 10px 5px !important;
-        line-height: 1.4 !important;
-    }
-    
-    .dedication-line.current {
-        font-size: 16px !important;
-    }
-    
-    /* Tiempo más pequeño */
-    .dedication-time {
-        font-size: 9px !important;
-    }
 }
+
 /* Para pantallas muy pequeñas (celulares muy pequeños) */
 @media screen and (max-width: 480px) {
     .player-container.expanded .lyrics-panel {
@@ -902,4 +909,5 @@ body {
         width: 100% !important;
         height: 350px !important;
     }
+
 
