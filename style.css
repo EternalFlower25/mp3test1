@@ -760,7 +760,16 @@ body {
    ================================ */
 
 @media screen and (max-width: 768px) {
-    /* Cambiar comportamiento del contenedor expandido */
+    /* Centrar todo en la pantalla */
+    body {
+        padding: 10px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+    
+    /* Contenedor principal - centrado */
     .player-container.expanded {
         flex-direction: column !important;
         width: 100% !important;
@@ -769,24 +778,41 @@ body {
         gap: 20px;
         padding: 10px;
         box-sizing: border-box;
+        align-items: center !important;
+        justify-content: center !important;
     }
     
-    /* Reproductor principal - ajustar tamaño */
+    /* Reproductor principal - centrado */
     .player-container.expanded .mp3-player {
         width: 100% !important;
-        max-width: 100% !important;
+        max-width: 400px !important;
         min-width: auto !important;
         height: auto !important;
+        margin: 0 auto !important;
     }
     
-    /* Panel de dedicatorias - expandir verticalmente */
+    /* Panel de dedicatorias - centrado */
     .player-container.expanded .lyrics-panel {
         width: 100% !important;
-        max-width: 100% !important;
-        height: 400px !important; /* Altura fija controlada */
+        max-width: 400px !important;
+        height: 400px !important;
         min-height: 300px;
-        margin: 0 !important;
-        order: 2; /* Aparecer debajo del reproductor */
+        margin: 0 auto !important;
+        order: 2;
+    }
+    
+    /* Modo compacto - también centrado */
+    .player-container.compact {
+        margin: 60px auto 0 auto !important;
+        width: 100%;
+        max-width: 400px;
+        display: flex;
+        justify-content: center;
+    }
+    
+    /* Asegurar que el reproductor compacto esté centrado */
+    .player-container.compact .mp3-player {
+        margin: 0 auto;
     }
     
     /* Ajustar líneas de dedicatoria para móvil */
@@ -821,20 +847,6 @@ body {
         margin: 0 !important;
     }
     
-    /* Centrar todo en la pantalla */
-    body {
-        padding: 10px !important;
-        align-items: flex-start !important;
-        justify-content: flex-start !important;
-        min-height: 100vh;
-        overflow-x: hidden;
-    }
-    
-    /* Modo compacto - centrar en móvil */
-    .player-container.compact {
-        margin-top: 60px; /* Espacio para botones */
-    }
-    
     /* Título de dedicatoria más pequeño */
     .dedication-title-input {
         font-size: 20px !important;
@@ -856,7 +868,6 @@ body {
         font-size: 9px !important;
     }
 }
-
 /* Para pantallas muy pequeñas (celulares muy pequeños) */
 @media screen and (max-width: 480px) {
     .player-container.expanded .lyrics-panel {
@@ -891,3 +902,4 @@ body {
         width: 100% !important;
         height: 350px !important;
     }
+
