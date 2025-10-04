@@ -733,7 +733,7 @@ function loadDedicationsFromUrl() {
             
             // Mostrar mensaje de bienvenida
             setTimeout(() => {
-                alert('💕 ¡Alguien especial te dedicó estas canciones!\n\nDisfruta de tu dedicatoria personalizada 🎵');
+                alert('💕 ¡Alguien especial te dedicó estas canciones :o!\n\nEsa personita te quiere mucho :3 🎵');
             }, 1000);
             
         } catch (error) {
@@ -809,7 +809,7 @@ function showShareModal(shareUrl) {
         <h3 style="margin-bottom: 20px;">💕 ¡Dedicatoria Lista para Compartir!</h3>
         
         <p style="line-height: 1.6; margin-bottom: 20px;">
-            Tu dedicatoria personalizada está lista. Comparte este enlace con esa persona especial:
+            Tu dedicatoria está lista. Comparte este enlace con esa persona especial:
         </p>
         
         <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; margin: 20px 0; word-break: break-all; font-family: monospace; font-size: 12px;">
@@ -874,5 +874,6 @@ function shareViaEmail(url) {
 
 
         window.onload = initPlayer;
+
 
 
