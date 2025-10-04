@@ -756,4 +756,142 @@
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(233,30,99,0.4);
 }
+/* ================================
+   RESPONSIVE - MÓVILES 
+   ================================ */
+
+@media screen and (max-width: 768px) {
+    /* Cambiar comportamiento del contenedor expandido */
+    .player-container.expanded {
+        flex-direction: column !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        gap: 20px;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+    
+    /* Reproductor principal - ajustar tamaño */
+    .player-container.expanded .mp3-player {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: auto !important;
+        height: auto !important;
+    }
+    
+    /* Panel de dedicatorias - expandir verticalmente */
+    .player-container.expanded .lyrics-panel {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 400px !important; /* Altura fija controlada */
+        min-height: 300px;
+        margin: 0 !important;
+        order: 2; /* Aparecer debajo del reproductor */
+    }
+    
+    /* Ajustar líneas de dedicatoria para móvil */
+    .dedication-lines {
+        max-height: 280px !important;
+        padding-right: 5px;
+    }
+    
+    /* Botones externos - reposicionar */
+    .external-controls {
+        top: 10px !important;
+        right: 10px !important;
+        gap: 8px !important;
+    }
+    
+    .upload-btn, .edit-dedication-btn, .share-btn {
+        padding: 8px 12px !important;
+        font-size: 11px !important;
+    }
+    
+    /* Selector de temas - reposicionar */
+    .theme-selector {
+        top: 10px !important;
+        left: 10px !important;
+        flex-direction: column !important;
+        gap: 5px !important;
+    }
+    
+    .theme-btn {
+        padding: 6px 10px !important;
+        font-size: 10px !important;
+        margin: 0 !important;
+    }
+    
+    /* Centrar todo en la pantalla */
+    body {
+        padding: 10px !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+    
+    /* Modo compacto - centrar en móvil */
+    .player-container.compact {
+        margin-top: 60px; /* Espacio para botones */
+    }
+    
+    /* Título de dedicatoria más pequeño */
+    .dedication-title-input {
+        font-size: 20px !important;
+    }
+    
+    /* Líneas de dedicatoria más legibles */
+    .dedication-line {
+        font-size: 14px !important;
+        padding: 10px 5px !important;
+        line-height: 1.4 !important;
+    }
+    
+    .dedication-line.current {
+        font-size: 16px !important;
+    }
+    
+    /* Tiempo más pequeño */
+    .dedication-time {
+        font-size: 9px !important;
+    }
+}
+
+/* Para pantallas muy pequeñas (celulares muy pequeños) */
+@media screen and (max-width: 480px) {
+    .player-container.expanded .lyrics-panel {
+        height: 350px !important;
+    }
+    
+    .dedication-lines {
+        max-height: 250px !important;
+    }
+    
+    /* Botones más pequeños */
+    .external-controls {
+        flex-direction: column !important;
+        align-items: flex-end;
+    }
+    
+    /* Reproductor un poco más pequeño */
+    .player-container.expanded .mp3-player {
+        transform: scale(0.95);
+        transform-origin: top center;
+    }
+}
+
+/* Para tabletas en orientación vertical */
+@media screen and (min-width: 769px) and (max-width: 1024px) and (orientation: portrait) {
+    .player-container.expanded {
+        flex-direction: column !important;
+        gap: 20px;
+    }
+    
+    .player-container.expanded .lyrics-panel {
+        width: 100% !important;
+        height: 350px !important;
+    }
+}
+
 
