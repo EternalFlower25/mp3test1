@@ -774,7 +774,7 @@ function generateShareableLink() {
         
     } catch (error) {
         console.error('❌ Error en generateShareableLink:', error); // Debug
-        alert(`❌ Error al generar enlace: ${error.message}\n\nIntenta escribir una dedicatoria más simple.`);
+        alert(`❌ Error al generar : ${error.message}\n\nIntenta escribir una dedicatoria más simple.`);
     }
 }
 
@@ -809,7 +809,7 @@ function showShareModal(shareUrl) {
         <h3 style="margin-bottom: 20px;">💕 ¡Dedicatoria Lista para Compartir!</h3>
         
         <p style="line-height: 1.6; margin-bottom: 20px;">
-            Tu dedicatoria está lista. Comparte este enlace con esa persona especial:
+            Tu dedicatoria está lista. Comparte este  con esa persona especial:
         </p>
         
         <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; margin: 20px 0; word-break: break-all; font-family: monospace; font-size: 12px;">
@@ -818,7 +818,7 @@ function showShareModal(shareUrl) {
         
         <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
             <button onclick="copyToClipboard('${shareUrl}')" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 10px; cursor: pointer;">
-                📋 Copiar Enlace
+                📋 Copiar 
             </button>
             <button onclick="shareViaWhatsApp('${shareUrl}')" style="padding: 10px 20px; background: #25D366; color: white; border: none; border-radius: 10px; cursor: pointer;">
                 📱 WhatsApp
@@ -832,7 +832,7 @@ function showShareModal(shareUrl) {
         </div>
         
         <p style="font-size: 12px; opacity: 0.7; margin-top: 15px;">
-            💡 Cuando abra este enlace, verá automáticamente tu dedicatoria personalizada
+            💡 Cuando abra este , verá automáticamente tu dedicatoria personalizada
         </p>
     `;
     
@@ -842,7 +842,7 @@ function showShareModal(shareUrl) {
 
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
-        alert('✅ ¡Enlace copiado al portapapeles!\n\nAhora puedes pegarlo donde quieras.');
+        alert('¡Enlace copiado al portapapeles!\n\nAhora puedes pegarlo donde quieras.');
     }).catch(() => {
         // Fallback para navegadores sin clipboard API
         const textArea = document.createElement('textarea');
@@ -874,6 +874,7 @@ function shareViaEmail(url) {
 
 
         window.onload = initPlayer;
+
 
 
 
