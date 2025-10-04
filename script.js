@@ -868,12 +868,48 @@ function shareViaEmail(url) {
     window.open(emailUrl);
 }
 
+// Detectar si es dispositivo móvil
+function isMobileDevice() {
+    return window.innerWidth <= 768 || 
+           /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+// Modificar la función toggleExpanded para móviles
+function toggleExpanded() {
+    isExpanded = !isExpanded;
+    const container = document.getElementById('playerContainer');
+    const expandBtn = document.getElementById('expandBtn');
+    const indicator = document.getElementById('modeIndicator');
+    
+    if (isExpanded) {
+        // Aplicar clase específica para móviles
+        const mobileClass = isMobileDevice() ? 'expanded mobile' : 'expanded';
+        container.className = `player-container ${mobileClass}`;
+        expandBtn.textContent = '⛶';
+        expandBtn.title = 'Modo Compacto';
+        indicator.textContent = ' ';
+        updateDedicationPanel(); 
+        
+        // En móviles, hacer scroll suave hacia abajo
+        if (isMobileDevice()) {
+            setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 300);
+        }
+    } else {
+        container.className = 'player-container compact';
+        expandBtn.textContent = '⛶';
+        expandBtn.title = '';
+        indicator.textContent = '';
+    }
+}
 
 
 
 
 
         window.onload = initPlayer;
+
 
 
 
