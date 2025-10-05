@@ -276,14 +276,17 @@ function toggleExpanded() {
         }
 
         function initPlayer() {
-            loadDedicationsFromUrl(); // ✅ Agregar esta línea al principio
-            initVisualizer();
-            updateDisplay();
-            updateProgress();
-            updateLyrics();
-            updatePlaylist();
-            loadSavedDedications();
-        }
+    initVisualizer();
+    updateDisplay();
+    updateProgress();
+    updateLyrics();
+    updatePlaylist();
+    
+    // Cargar dedicatorias en el orden correcto
+    loadDedicationsFromUrl();
+    loadSavedDedications();
+}
+
         
 
 
@@ -506,24 +509,35 @@ function getSongId(song) {
 function getCurrentDedication() {
     const songId = getSongId(songs[currentTrack]);
     
-    // Si no existe dedicatoria para esta canción, crear una por defecto
-    if (!songDedications[songId]) {
-        songDedications[songId] = {
-            title: `Para Ti - ${songs[currentTrack].title}`,
-            subtitle: "Desde Mi Corazón",
-            lines: [
-                `♪ ${songs[currentTrack].title} ♪`,
-                "Esta canción me recuerda a ti",
-                "Cada nota toca mi corazón",
-                "Y me hace pensar en nosotros",
-                "En todos esos momentos especiales",
-                "Que hemos compartido juntos",
-                "♪ Con amor infinito ♪"
-            ]
-        };
+    // 1. PRIORIDAD: Si hay dedicatorias compartidas, usarlas
+    if (songDedications[songId] && Object.keys(songDedications).length > 0) {
+        console.log('🎵 Usando dedicatoria compartida para:', songId);
+        return songDedications[songId];
     }
     
-    return songDedications[songId];
+    // 2. SEGUNDA OPCIÓN: Dedicatorias fijas (las tuyas para tu amiga)
+    if (fixedDedications[songId]) {
+        console.log('💝 Usando dedicatoria fija para:', songId);
+        return fixedDedications[songId];
+    }
+    
+    // 3. ÚLTIMA OPCIÓN: Dedicatoria genérica
+    const currentSong = songs[currentTrack];
+    console.log('🎶 Usando dedicatoria genérica para:', songId);
+    return {
+        title: `♪ ${currentSong.title} ♪`,
+        subtitle: "Una canción especial",
+        lines: [
+            `♪ ${currentSong.title} ♪`,
+            "Esta canción también es especial",
+            "porque la escuchamos juntos",
+            "y cada momento contigo",
+            "se vuelve único",
+            "Gracias por compartir",
+            "tu música conmigo",
+            "♪ Con cariño ♪"
+        ]
+    };
 }
 
 
@@ -721,35 +735,57 @@ function loadSavedDedications() {
 }
 // Cargar dedicatorias desde URL al iniciar
 function loadDedicationsFromUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const dedicationsParam = urlParams.get('d');
-    
-    if (dedicationsParam) {
-        try {
-            console.log('🔍 Cargando dedicatorias desde URL...'); // Debug
-            const decodedDedications = JSON.parse(decodeURIComponent(escape(atob(dedicationsParam))));
-            songDedications = { ...decodedDedications };
-            console.log('✅ Dedicatorias cargadas:', songDedications); // Debug
-            
-            // Mostrar mensaje de bienvenida
-            setTimeout(() => {
-                alert('💕 ¡Alguien especial te dedicó estas canciones :o!\n\nEsa personita te quiere mucho :3 🎵');
-            }, 1000);
-            
-        } catch (error) {
-            console.error('❌ Error cargando dedicatorias de URL:', error); // Debug
+    // Esperar a que todo esté cargado
+    setTimeout(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const dedicationsParam = urlParams.get('d');
+        
+        console.log('🔍 Verificando URL para dedicatorias:', dedicationsParam ? 'Encontrado' : 'No encontrado');
+        
+        if (dedicationsParam && dedicationsParam.length > 0) {
+            try {
+                // Limpiar el parámetro de posibles caracteres extraños
+                const cleanParam = dedicationsParam.replace(/[^A-Za-z0-9+/=]/g, '');
+                console.log('🔧 Parámetro limpio:', cleanParam.substring(0, 50) + '...');
+                
+                // Decodificar
+                const decodedString = decodeURIComponent(escape(atob(cleanParam)));
+                const decodedDedications = JSON.parse(decodedString);
+                
+                // IMPORTANTE: Sobrescribir las dedicatorias existentes
+                songDedications = { ...decodedDedications };
+                console.log('✅ Dedicatorias cargadas exitosamente:', Object.keys(songDedications));
+                
+                // Forzar actualización de la pantalla
+                if (isExpanded) {
+                    updateDedicationPanel();
+                }
+                
+                // Mostrar mensaje de confirmación
+                setTimeout(() => {
+                    alert('💕 ¡Alguien especial te dedicó estas canciones!\n\nDisfruta de tu dedicatoria personalizada 🎵');
+                }, 1500);
+                
+                return true; // Indicar que se cargaron dedicatorias compartidas
+                
+            } catch (error) {
+                console.error('❌ Error cargando dedicatorias de URL:', error);
+                console.log('📋 Parámetro problemático:', dedicationsParam);
+                return false;
+            }
         }
-    }
+        return false;
+    }, 500); // Esperar medio segundo para que todo cargue
 }
 
 
 // Generar enlace compartible con dedicatorias
 function generateShareableLink() {
-    console.log('🔍 Iniciando generateShareableLink...'); // Debug
+    console.log('🔍 Iniciando generación de enlace...');
     
     // Verificar que hay dedicatorias personalizadas
     const hasCustomDedications = Object.keys(songDedications).length > 0;
-    console.log('📊 Dedicatorias encontradas:', hasCustomDedications, songDedications); // Debug
+    console.log('📊 Dedicatorias disponibles:', hasCustomDedications, songDedications);
     
     if (!hasCustomDedications) {
         alert('💡 Primero debes escribir una dedicatoria personalizada.\n\nHaz clic en "✏️ Editar Dedicatoria" para empezar.');
@@ -757,26 +793,37 @@ function generateShareableLink() {
     }
     
     try {
-        // Codificar dedicatorias en base64 (con manejo de errores)
-        const dedicationsString = JSON.stringify(songDedications);
-        console.log('📝 JSON a codificar:', dedicationsString); // Debug
+        // Crear copia limpia de las dedicatorias
+        const dedicationsToShare = { ...songDedications };
         
+        // Codificar con mejor manejo
+        const dedicationsString = JSON.stringify(dedicationsToShare);
+        console.log('📝 JSON a codificar:', dedicationsString.length, 'caracteres');
+        
+        // Mejor codificación
         const dedicationsEncoded = btoa(unescape(encodeURIComponent(dedicationsString)));
-        console.log('🔐 Codificación exitosa:', dedicationsEncoded.substring(0, 50) + '...'); // Debug
+        console.log('🔐 Codificación exitosa:', dedicationsEncoded.length, 'caracteres');
         
-        // Generar URL con dedicatorias
-        const currentUrl = window.location.origin + window.location.pathname;
-        const shareableUrl = `${currentUrl}?d=${dedicationsEncoded}`;
-        console.log('🔗 URL generada:', shareableUrl); // Debug
+        // Generar URL
+        const baseUrl = window.location.origin + window.location.pathname;
+        const shareableUrl = `${baseUrl}?d=${dedicationsEncoded}`;
+        console.log('🔗 URL generada:', shareableUrl.length, 'caracteres totales');
         
-        // Mostrar modal con opciones para compartir
+        // Verificar que la URL no sea demasiado larga
+        if (shareableUrl.length > 8000) {
+            alert('⚠️ La dedicatoria es muy larga para compartir.\nIntenta acortar el texto.');
+            return;
+        }
+        
+        // Mostrar modal
         showShareModal(shareableUrl);
         
     } catch (error) {
-        console.error('❌ Error en generateShareableLink:', error); // Debug
-        alert(`❌ Error al generar : ${error.message}\n\nIntenta escribir una dedicatoria más simple.`);
+        console.error('❌ Error generando enlace:', error);
+        alert(`❌ Error al generar enlace: ${error.message}\n\nIntenta escribir una dedicatoria más simple.`);
     }
 }
+
 
 function showShareModal(shareUrl) {
     const modal = document.createElement('div');
@@ -909,6 +956,7 @@ function toggleExpanded() {
 
 
         window.onload = initPlayer;
+
 
 
 
