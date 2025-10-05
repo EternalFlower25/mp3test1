@@ -509,36 +509,30 @@ function getSongId(song) {
 function getCurrentDedication() {
     const songId = getSongId(songs[currentTrack]);
     
-    // 1. PRIORIDAD: Si hay dedicatorias compartidas, usarlas
-    if (songDedications[songId] && Object.keys(songDedications).length > 0) {
-        console.log('🎵 Usando dedicatoria compartida para:', songId);
+    // Si existe dedicatoria guardada, usarla
+    if (songDedications[songId]) {
+        console.log('🎵 Usando dedicatoria guardada para:', songId);
         return songDedications[songId];
     }
     
-    // 2. SEGUNDA OPCIÓN: Dedicatorias fijas (las tuyas para tu amiga)
-    if (fixedDedications[songId]) {
-        console.log('💝 Usando dedicatoria fija para:', songId);
-        return fixedDedications[songId];
-    }
-    
-    // 3. ÚLTIMA OPCIÓN: Dedicatoria genérica
+    // Si no hay dedicatoria, crear una por defecto
     const currentSong = songs[currentTrack];
-    console.log('🎶 Usando dedicatoria genérica para:', songId);
+    console.log('🎶 Creando dedicatoria por defecto para:', songId);
     return {
-        title: `♪ ${currentSong.title} ♪`,
-        subtitle: "Una canción especial",
+        title: `Para Ti - ${currentSong.title}`,
+        subtitle: "Desde Mi Corazón",
         lines: [
             `♪ ${currentSong.title} ♪`,
-            "Esta canción también es especial",
-            "porque la escuchamos juntos",
-            "y cada momento contigo",
-            "se vuelve único",
-            "Gracias por compartir",
-            "tu música conmigo",
-            "♪ Con cariño ♪"
+            "Esta canción me recuerda a ti",
+            "Cada nota toca mi corazón",
+            "Y me hace pensar en nosotros",
+            "En todos esos momentos especiales",
+            "Que hemos compartido juntos",
+            "♪ Con amor infinito ♪"
         ]
     };
 }
+
 
 
 // Función para calcular timing automático según duración de canción
@@ -956,6 +950,7 @@ function toggleExpanded() {
 
 
         window.onload = initPlayer;
+
 
 
 
