@@ -729,57 +729,63 @@ function loadSavedDedications() {
 }
 // Cargar dedicatorias desde URL al iniciar
 function loadDedicationsFromUrl() {
-    // Esperar a que todo esté cargado
     setTimeout(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const dedicationsParam = urlParams.get('d');
         
-        console.log('🔍 Verificando URL para dedicatorias:', dedicationsParam ? 'Encontrado' : 'No encontrado');
-        
         if (dedicationsParam && dedicationsParam.length > 0) {
             try {
-                // Limpiar el parámetro de posibles caracteres extraños
                 const cleanParam = dedicationsParam.replace(/[^A-Za-z0-9+/=]/g, '');
-                console.log('🔧 Parámetro limpio:', cleanParam.substring(0, 50) + '...');
-                
-                // Decodificar
                 const decodedString = decodeURIComponent(escape(atob(cleanParam)));
                 const decodedDedications = JSON.parse(decodedString);
                 
-                // IMPORTANTE: Sobrescribir las dedicatorias existentes
-                songDedications = { ...decodedDedications };
-                console.log('✅ Dedicatorias cargadas exitosamente:', Object.keys(songDedications));
+                // ✅ NUEVO: Expandir formato comprimido
+                const expandedDedications = {};
+                Object.keys(decodedDedications).forEach(songId => {
+                    const compressed = decodedDedications[songId];
+                    
+                    // Si es formato comprimido (tiene 't', 's', 'l')
+                    if (compressed.t && compressed.s && compressed.l) {
+                        expandedDedications[songId] = {
+                            title: compressed.t,
+                            subtitle: compressed.s,
+                            lines: compressed.l
+                        };
+                    } else {
+                        // Formato normal
+                        expandedDedications[songId] = compressed;
+                    }
+                });
                 
-                // Forzar actualización de la pantalla
+                songDedications = { ...expandedDedications };
+                console.log('✅ Dedicatorias cargadas:', Object.keys(songDedications));
+                
                 if (isExpanded) {
                     updateDedicationPanel();
                 }
                 
-                // Mostrar mensaje de confirmación
                 setTimeout(() => {
                     alert('💕 ¡Alguien especial te dedicó estas canciones!\n\nDisfruta de tu dedicatoria personalizada 🎵');
                 }, 1500);
                 
-                return true; // Indicar que se cargaron dedicatorias compartidas
+                return true;
                 
             } catch (error) {
-                console.error('❌ Error cargando dedicatorias de URL:', error);
-                console.log('📋 Parámetro problemático:', dedicationsParam);
+                console.error('❌ Error cargando dedicatorias:', error);
                 return false;
             }
         }
         return false;
-    }, 500); // Esperar medio segundo para que todo cargue
+    }, 500);
 }
+
 
 
 // Generar enlace compartible con dedicatorias
 function generateShareableLink() {
     console.log('🔍 Iniciando generación de enlace...');
     
-    // Verificar que hay dedicatorias personalizadas
     const hasCustomDedications = Object.keys(songDedications).length > 0;
-    console.log('📊 Dedicatorias disponibles:', hasCustomDedications, songDedications);
     
     if (!hasCustomDedications) {
         alert('💡 Primero debes escribir una dedicatoria personalizada.\n\nHaz clic en "✏️ Editar Dedicatoria" para empezar.');
@@ -787,36 +793,54 @@ function generateShareableLink() {
     }
     
     try {
-        // Crear copia limpia de las dedicatorias
-        const dedicationsToShare = { ...songDedications };
+        // ✅ NUEVA: Comprimir dedicatorias eliminando texto redundante
+        const compressedDedications = {};
         
-        // Codificar con mejor manejo
-        const dedicationsString = JSON.stringify(dedicationsToShare);
-        console.log('📝 JSON a codificar:', dedicationsString.length, 'caracteres');
+        Object.keys(songDedications).forEach(songId => {
+            const dedication = songDedications[songId];
+            
+            // Comprimir eliminando líneas muy largas y acortando texto
+            const compressedLines = dedication.lines
+                .map(line => {
+                    // Acortar líneas muy largas
+                    if (line.length > 50) {
+                        return line.substring(0, 47) + '...';
+                    }
+                    return line;
+                })
+                .slice(0, 8); // Máximo 8 líneas
+            
+            compressedDedications[songId] = {
+                t: dedication.title.substring(0, 30), // Título corto
+                s: dedication.subtitle.substring(0, 20), // Subtítulo corto  
+                l: compressedLines
+            };
+        });
         
-        // Mejor codificación
+        // Codificar versión comprimida
+        const dedicationsString = JSON.stringify(compressedDedications);
+        console.log('📝 JSON comprimido:', dedicationsString.length, 'caracteres');
+        
         const dedicationsEncoded = btoa(unescape(encodeURIComponent(dedicationsString)));
-        console.log('🔐 Codificación exitosa:', dedicationsEncoded.length, 'caracteres');
-        
-        // Generar URL
         const baseUrl = window.location.origin + window.location.pathname;
         const shareableUrl = `${baseUrl}?d=${dedicationsEncoded}`;
-        console.log('🔗 URL generada:', shareableUrl.length, 'caracteres totales');
         
-        // Verificar que la URL no sea demasiado larga
-        if (shareableUrl.length > 8000) {
-            alert('⚠️ La dedicatoria es muy larga para compartir.\nIntenta acortar el texto.');
+        console.log('🔗 URL final:', shareableUrl.length, 'caracteres');
+        
+        // Verificar longitud
+        if (shareableUrl.length > 2000) {
+            alert('⚠️ La dedicatoria sigue siendo muy larga.\nIntenta escribir mensajes más cortos.');
             return;
         }
         
-        // Mostrar modal
         showShareModal(shareableUrl);
         
     } catch (error) {
         console.error('❌ Error generando enlace:', error);
-        alert(`❌ Error al generar enlace: ${error.message}\n\nIntenta escribir una dedicatoria más simple.`);
+        alert(`❌ Error: ${error.message}`);
     }
 }
+
 
 
 function showShareModal(shareUrl) {
@@ -950,6 +974,7 @@ function toggleExpanded() {
 
 
         window.onload = initPlayer;
+
 
 
 
