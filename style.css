@@ -784,8 +784,8 @@ body {
     
     /* Reproductor principal - centrado */
     .player-container.expanded .mp3-player {
-        width: 100% !important;
-        max-width: 400px !important;
+        width: 90% !important;
+        max-width: 350px !important;
         min-width: auto !important;
         height: auto !important;
         margin: 0 auto !important;
@@ -793,8 +793,8 @@ body {
     
     /* Panel de dedicatorias - centrado */
     .player-container.expanded .lyrics-panel {
-        width: 100% !important;
-        max-width: 400px !important;
+        width: 90% !important;
+        max-width: 350px !important;
         height: 400px !important;
         min-height: 300px;
         margin: 0 auto !important;
@@ -818,7 +818,7 @@ body {
     /* Centrar mejor el contenido del panel */
     .dedication-lines {
         max-height: 280px !important;
-        padding: 0 20px !important;
+        padding: 0 15px !important;
         text-align: center !important;
     }
     
@@ -909,5 +909,6 @@ body {
         width: 100% !important;
         height: 350px !important;
     }
+
 
 
