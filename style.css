@@ -762,7 +762,7 @@ body {
 @media screen and (max-width: 768px) {
     /* Centrar todo en la pantalla */
     body {
-        padding: 10px !important;
+        padding: 5px !important; /* ✅ CAMBIO: de 10px a 5px */
         align-items: center !important;
         justify-content: center !important;
         min-height: 100vh;
@@ -775,37 +775,39 @@ body {
         width: 100% !important;
         max-width: 100% !important;
         height: auto !important;
-        gap: 20px;
-        padding: 10px;
+        gap: 15px; /* ✅ CAMBIO: de 20px a 15px */
+        padding: 5px; /* ✅ CAMBIO: de 10px a 5px */
         box-sizing: border-box;
         align-items: center !important;
         justify-content: center !important;
     }
     
-    /* Reproductor principal - centrado */
+    /* Reproductor principal - más estrecho */
     .player-container.expanded .mp3-player {
-        width: 90% !important;
-        max-width: 350px !important;
+        width: 85% !important; /* ✅ CAMBIO: de 90% a 85% */
+        max-width: 320px !important; /* ✅ CAMBIO: de 350px a 320px */
         min-width: auto !important;
         height: auto !important;
         margin: 0 auto !important;
     }
     
-    /* Panel de dedicatorias - centrado */
+    /* Panel de dedicatorias - más estrecho y mejor espaciado */
     .player-container.expanded .lyrics-panel {
-        width: 90% !important;
-        max-width: 350px !important;
-        height: 400px !important;
+        width: 85% !important; /* ✅ CAMBIO: de 90% a 85% */
+        max-width: 320px !important; /* ✅ CAMBIO: de 350px a 320px */
+        height: 380px !important; /* ✅ CAMBIO: de 400px a 380px */
         min-height: 300px;
         margin: 0 auto !important;
         order: 2;
+        padding: 15px !important; /* ✅ NUEVO: padding interno */
+        box-sizing: border-box !important; /* ✅ NUEVO: incluir padding */
     }
     
-    /* Modo compacto - también centrado */
+    /* Modo compacto - también más estrecho */
     .player-container.compact {
         margin: 60px auto 0 auto !important;
-        width: 100%;
-        max-width: 400px;
+        width: 85% !important; /* ✅ CAMBIO: de 100% a 85% */
+        max-width: 320px !important; /* ✅ CAMBIO: de 400px a 320px */
         display: flex;
         justify-content: center;
     }
@@ -817,72 +819,83 @@ body {
     
     /* Centrar mejor el contenido del panel */
     .dedication-lines {
-        max-height: 280px !important;
-        padding: 0 15px !important;
+        max-height: 260px !important; /* ✅ CAMBIO: de 280px a 260px */
+        padding: 0 10px !important; /* ✅ CAMBIO: de 15px a 10px */
         text-align: center !important;
     }
     
-    /* Líneas de dedicatoria centradas */
+    /* Líneas de dedicatoria centradas y más compactas */
     .dedication-line {
-        font-size: 14px !important;
-        padding: 10px 0 !important;
-        line-height: 1.4 !important;
+        font-size: 13px !important; /* ✅ CAMBIO: de 14px a 13px */
+        padding: 8px 0 !important; /* ✅ CAMBIO: de 10px a 8px */
+        line-height: 1.3 !important; /* ✅ CAMBIO: de 1.4 a 1.3 */
         text-align: center !important;
     }
     
     .dedication-line.current {
-        font-size: 16px !important;
+        font-size: 15px !important; /* ✅ CAMBIO: de 16px a 15px */
     }
     
-    /* Tiempo centrado */
+    /* Tiempo centrado y más pequeño */
     .dedication-time {
-        font-size: 9px !important;
+        font-size: 8px !important; /* ✅ CAMBIO: de 9px a 8px */
         float: none !important;
         display: block !important;
         text-align: center !important;
-        margin: 5px auto 0 auto !important;
+        margin: 3px auto 0 auto !important; /* ✅ CAMBIO: de 5px a 3px */
     }
     
-    /* Botones externos - reposicionar */
+    /* Botones externos - más compactos */
     .external-controls {
-        top: 10px !important;
-        right: 10px !important;
-        gap: 8px !important;
+        top: 5px !important; /* ✅ CAMBIO: de 10px a 5px */
+        right: 5px !important; /* ✅ CAMBIO: de 10px a 5px */
+        gap: 5px !important; /* ✅ CAMBIO: de 8px a 5px */
     }
     
     .upload-btn, .edit-dedication-btn, .share-btn {
-        padding: 8px 12px !important;
-        font-size: 11px !important;
+        padding: 6px 10px !important; /* ✅ CAMBIO: de 8px 12px a 6px 10px */
+        font-size: 10px !important; /* ✅ CAMBIO: de 11px a 10px */
     }
     
-    /* Selector de temas - reposicionar */
+    /* Selector de temas - más compacto */
     .theme-selector {
-        top: 10px !important;
-        left: 10px !important;
+        top: 5px !important; /* ✅ CAMBIO: de 10px a 5px */
+        left: 5px !important; /* ✅ CAMBIO: de 10px a 5px */
         flex-direction: column !important;
-        gap: 5px !important;
+        gap: 3px !important; /* ✅ CAMBIO: de 5px a 3px */
     }
     
     .theme-btn {
-        padding: 6px 10px !important;
-        font-size: 10px !important;
+        padding: 5px 8px !important; /* ✅ CAMBIO: de 6px 10px a 5px 8px */
+        font-size: 9px !important; /* ✅ CAMBIO: de 10px a 9px */
         margin: 0 !important;
     }
     
     /* Título de dedicatoria más pequeño */
     .dedication-title-input {
-        font-size: 20px !important;
+        font-size: 18px !important; /* ✅ CAMBIO: de 20px a 18px */
     }
 }
 
 /* Para pantallas muy pequeñas (celulares muy pequeños) */
 @media screen and (max-width: 480px) {
+    /* Panel aún más pequeño */
     .player-container.expanded .lyrics-panel {
         height: 350px !important;
+        width: 95% !important; /* ✅ NUEVO: más ancho en pantallas muy pequeñas */
+        max-width: 300px !important; /* ✅ NUEVO: max-width menor */
     }
     
     .dedication-lines {
-        max-height: 250px !important;
+        max-height: 240px !important; /* ✅ CAMBIO: de 250px a 240px */
+    }
+    
+    /* Reproductor también más ancho en pantallas muy pequeñas */
+    .player-container.expanded .mp3-player {
+        width: 95% !important; /* ✅ NUEVO: más ancho */
+        max-width: 300px !important; /* ✅ NUEVO: max-width menor */
+        transform: scale(0.98); /* ✅ CAMBIO: de 0.95 a 0.98 */
+        transform-origin: top center;
     }
     
     /* Botones más pequeños */
@@ -891,10 +904,30 @@ body {
         align-items: flex-end;
     }
     
-    /* Reproductor un poco más pequeño */
-    .player-container.expanded .mp3-player {
-        transform: scale(0.95);
-        transform-origin: top center;
+    /* Texto aún más pequeño */
+    .dedication-line {
+        font-size: 12px !important; /* ✅ NUEVO */
+    }
+    
+    .dedication-line.current {
+        font-size: 14px !important; /* ✅ NUEVO */
+    }
+}
+
+/* Para pantallas EXTRA pequeñas */
+@media screen and (max-width: 360px) {
+    .player-container.expanded .mp3-player,
+    .player-container.expanded .lyrics-panel {
+        width: 98% !important; /* ✅ NUEVO: casi todo el ancho disponible */
+        max-width: 280px !important; /* ✅ NUEVO: aún más pequeño */
+    }
+    
+    .dedication-title-input {
+        font-size: 16px !important; /* ✅ NUEVO: título más pequeño */
+    }
+    
+    body {
+        padding: 2px !important; /* ✅ NUEVO: padding mínimo */
     }
 }
 
@@ -909,6 +942,4 @@ body {
         width: 100% !important;
         height: 350px !important;
     }
-
-
-
+}
