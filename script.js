@@ -730,54 +730,74 @@ function loadSavedDedications() {
 // Cargar dedicatorias desde URL al iniciar
 function loadDedicationsFromUrl() {
     setTimeout(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const dedicationsParam = urlParams.get('d');
-        
-        if (dedicationsParam && dedicationsParam.length > 0) {
-            try {
-                const cleanParam = dedicationsParam.replace(/[^A-Za-z0-9+/=]/g, '');
-                const decodedString = decodeURIComponent(escape(atob(cleanParam)));
-                const decodedDedications = JSON.parse(decodedString);
-                
-                // ✅ NUEVO: Expandir formato comprimido
-                const expandedDedications = {};
-                Object.keys(decodedDedications).forEach(songId => {
-                    const compressed = decodedDedications[songId];
-                    
-                    // Si es formato comprimido (tiene 't', 's', 'l')
-                    if (compressed.t && compressed.s && compressed.l) {
-                        expandedDedications[songId] = {
-                            title: compressed.t,
-                            subtitle: compressed.s,
-                            lines: compressed.l
-                        };
-                    } else {
-                        // Formato normal
-                        expandedDedications[songId] = compressed;
-                    }
-                });
-                
-                songDedications = { ...expandedDedications };
-                console.log('✅ Dedicatorias cargadas:', Object.keys(songDedications));
-                
-                if (isExpanded) {
-                    updateDedicationPanel();
-                }
-                
-                setTimeout(() => {
-                    alert('💕 ¡Alguien especial te dedicó estas canciones!\n\nDisfruta de tu dedicatoria personalizada 🎵');
-                }, 1500);
-                
-                return true;
-                
-            } catch (error) {
-                console.error('❌ Error cargando dedicatorias:', error);
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const dedicationsParam = urlParams.get('d');
+            
+            console.log('🔍 Verificando URL para dedicatorias:', dedicationsParam ? 'Encontrado' : 'No encontrado');
+            
+            if (!dedicationsParam || dedicationsParam.length === 0) {
+                console.log('ℹ️ No hay parámetro de dedicatoria en URL');
                 return false;
             }
+            
+            // ✅ NUEVO: Mejor validación y manejo de errores
+            const cleanParam = dedicationsParam.replace(/[^A-Za-z0-9+/=]/g, '');
+            
+            if (cleanParam.length === 0) {
+                console.log('⚠️ Parámetro vacío después de limpiar');
+                return false;
+            }
+            
+            console.log('🔧 Parámetro limpio:', cleanParam.substring(0, 50) + '...');
+            
+            // ✅ NUEVO: Decodificación más robusta
+            let decodedString;
+            try {
+                const base64Decoded = atob(cleanParam);
+                decodedString = decodeURIComponent(base64Decoded);
+            } catch (decodeError) {
+                console.log('⚠️ Error en decodificación tradicional, probando método alternativo');
+                try {
+                    // Método alternativo
+                    const base64Decoded = atob(cleanParam);
+                    decodedString = decodeURIComponent(escape(base64Decoded));
+                } catch (altError) {
+                    console.error('❌ Error en ambos métodos de decodificación:', altError);
+                    return false;
+                }
+            }
+            
+            console.log('📄 String decodificado exitosamente');
+            
+            const decodedDedications = JSON.parse(decodedString);
+            
+            // Sobrescribir dedicatorias existentes
+            songDedications = { ...decodedDedications };
+            console.log('✅ Dedicatorias cargadas exitosamente:', Object.keys(songDedications));
+            
+            // Forzar actualización de la pantalla
+            if (isExpanded) {
+                updateDedicationPanel();
+            }
+            
+            // Mostrar mensaje de confirmación
+            setTimeout(() => {
+                alert('💕 ¡Alguien especial te dedicó estas canciones!\n\nDisfruta de tu dedicatoria personalizada 🎵');
+            }, 1500);
+            
+            return true;
+            
+        } catch (error) {
+            console.error('❌ Error general cargando dedicatorias de URL:', error);
+            console.log('🔄 Continuando sin cargar dedicatorias de URL');
+            
+            // ✅ IMPORTANTE: No romper la aplicación, solo continuar
+            return false;
         }
-        return false;
     }, 500);
 }
+
 
 
 
@@ -974,6 +994,7 @@ function toggleExpanded() {
 
 
         window.onload = initPlayer;
+
 
 
 
