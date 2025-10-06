@@ -275,17 +275,34 @@ function toggleExpanded() {
             nextTrack();
         }
 
-        function initPlayer() {
+function initPlayer() {
+    console.log('🚀 Iniciando reproductor...');
+    
+    // Inicializar elementos básicos
     initVisualizer();
     updateDisplay();
     updateProgress();
     updateLyrics();
     updatePlaylist();
     
-    // Cargar dedicatorias en el orden correcto
-    loadDedicationsFromUrl();
-    loadSavedDedications();
+    // Cargar dedicatorias en orden específico
+    setTimeout(() => {
+        console.log('📥 Cargando dedicatorias...');
+        
+        // 1. Primero intentar cargar desde URL (prioridad)
+        const urlLoaded = loadDedicationsFromUrl();
+        
+        // 2. Si no hay URL, cargar desde localStorage
+        if (!urlLoaded) {
+            setTimeout(() => {
+                loadSavedDedications();
+                console.log('💾 Dedicatorias locales cargadas');
+            }, 200);
+        }
+        
+    }, 50);
 }
+
 
         
 
@@ -729,74 +746,95 @@ function loadSavedDedications() {
 }
 // Cargar dedicatorias desde URL al iniciar
 function loadDedicationsFromUrl() {
+    console.log('🔍 Iniciando carga de dedicatorias desde URL...');
+    
     setTimeout(() => {
         try {
             const urlParams = new URLSearchParams(window.location.search);
             const dedicationsParam = urlParams.get('d');
-            
-            console.log('🔍 Verificando URL para dedicatorias:', dedicationsParam ? 'Encontrado' : 'No encontrado');
             
             if (!dedicationsParam || dedicationsParam.length === 0) {
                 console.log('ℹ️ No hay parámetro de dedicatoria en URL');
                 return false;
             }
             
-            // ✅ NUEVO: Mejor validación y manejo de errores
-            const cleanParam = dedicationsParam.replace(/[^A-Za-z0-9+/=]/g, '');
+            console.log('📥 Parámetro encontrado, longitud:', dedicationsParam.length);
             
-            if (cleanParam.length === 0) {
-                console.log('⚠️ Parámetro vacío después de limpiar');
-                return false;
-            }
+            // ✅ NUEVO: Decodificación más robusta paso a paso
+            let decodedDedications;
             
-            console.log('🔧 Parámetro limpio:', cleanParam.substring(0, 50) + '...');
-            
-            // ✅ NUEVO: Decodificación más robusta
-            let decodedString;
             try {
+                // Paso 1: Limpiar parámetro
+                const cleanParam = dedicationsParam.trim();
+                console.log('🧹 Parámetro limpio');
+                
+                // Paso 2: Decodificar Base64
                 const base64Decoded = atob(cleanParam);
-                decodedString = decodeURIComponent(base64Decoded);
-            } catch (decodeError) {
-                console.log('⚠️ Error en decodificación tradicional, probando método alternativo');
+                console.log('🔓 Base64 decodificado exitosamente');
+                
+                // Paso 3: Decodificar URI (método más compatible)
+                let jsonString;
                 try {
-                    // Método alternativo
-                    const base64Decoded = atob(cleanParam);
-                    decodedString = decodeURIComponent(escape(base64Decoded));
-                } catch (altError) {
-                    console.error('❌ Error en ambos métodos de decodificación:', altError);
-                    return false;
+                    // Método moderno
+                    jsonString = decodeURIComponent(base64Decoded);
+                } catch (e) {
+                    console.log('⚠️ Método moderno falló, usando método clásico');
+                    // Método clásico para navegadores antiguos
+                    jsonString = decodeURIComponent(escape(base64Decoded));
                 }
+                
+                console.log('🔗 URI decodificado exitosamente');
+                console.log('📄 JSON string preview:', jsonString.substring(0, 100) + '...');
+                
+                // Paso 4: Parsear JSON
+                decodedDedications = JSON.parse(jsonString);
+                console.log('📋 JSON parseado exitosamente');
+                
+                // Paso 5: Validar estructura
+                if (typeof decodedDedications === 'object' && decodedDedications !== null) {
+                    const keys = Object.keys(decodedDedications);
+                    console.log('🎵 Canciones encontradas:', keys.length);
+                    
+                    if (keys.length > 0) {
+                        // ✅ CRÍTICO: Sobrescribir dedicatorias existentes
+                        songDedications = decodedDedications;
+                        console.log('✅ Dedicatorias cargadas y aplicadas:', keys);
+                        
+                        // Forzar actualización inmediata
+                        setTimeout(() => {
+                            if (isExpanded) {
+                                updateDedicationPanel();
+                            }
+                        }, 100);
+                        
+                        // Mostrar confirmación
+                        setTimeout(() => {
+                            alert('💕 ¡Dedicatoria personalizada cargada!\n\n🎵 Disfruta tu música especial');
+                        }, 1000);
+                        
+                        return true;
+                    } else {
+                        console.log('⚠️ No se encontraron canciones en los datos');
+                    }
+                } else {
+                    console.log('⚠️ Estructura de datos inválida');
+                }
+                
+            } catch (decodeError) {
+                console.error('❌ Error en decodificación:', decodeError);
+                console.log('📋 Parámetro problemático:', dedicationsParam.substring(0, 50) + '...');
             }
             
-            console.log('📄 String decodificado exitosamente');
-            
-            const decodedDedications = JSON.parse(decodedString);
-            
-            // Sobrescribir dedicatorias existentes
-            songDedications = { ...decodedDedications };
-            console.log('✅ Dedicatorias cargadas exitosamente:', Object.keys(songDedications));
-            
-            // Forzar actualización de la pantalla
-            if (isExpanded) {
-                updateDedicationPanel();
-            }
-            
-            // Mostrar mensaje de confirmación
-            setTimeout(() => {
-                alert('💕 ¡Alguien especial te dedicó estas canciones!\n\nDisfruta de tu dedicatoria personalizada 🎵');
-            }, 1500);
-            
-            return true;
-            
-        } catch (error) {
-            console.error('❌ Error general cargando dedicatorias de URL:', error);
-            console.log('🔄 Continuando sin cargar dedicatorias de URL');
-            
-            // ✅ IMPORTANTE: No romper la aplicación, solo continuar
-            return false;
+        } catch (mainError) {
+            console.error('❌ Error general:', mainError);
         }
-    }, 500);
+        
+        console.log('🔄 Continuando con dedicatorias por defecto');
+        return false;
+        
+    }, 100); // Menos delay para carga más rápida
 }
+
 
 
 
@@ -994,6 +1032,7 @@ function toggleExpanded() {
 
 
         window.onload = initPlayer;
+
 
 
 
