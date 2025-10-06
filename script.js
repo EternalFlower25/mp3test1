@@ -759,81 +759,143 @@ function loadDedicationsFromUrl() {
             }
             
             console.log('📥 Parámetro encontrado, longitud:', dedicationsParam.length);
+            console.log('🔍 Primeros 50 chars:', dedicationsParam.substring(0, 50));
             
-            // ✅ NUEVO: Decodificación más robusta paso a paso
+            // ✅ Validar que el parámetro sea válido base64
+            const base64Pattern = /^[A-Za-z0-9+/=]+$/;
+            if (!base64Pattern.test(dedicationsParam)) {
+                console.log('❌ Parámetro no es base64 válido');
+                return false;
+            }
+            
             let decodedDedications;
             
             try {
-                // Paso 1: Limpiar parámetro
-                const cleanParam = dedicationsParam.trim();
-                console.log('🧹 Parámetro limpio');
+                console.log('🔓 Intentando decodificar Base64...');
+                const base64Decoded = atob(dedicationsParam);
+                console.log('✅ Base64 decodificado, longitud:', base64Decoded.length);
+                console.log('👀 Primeros chars decodificados:', base64Decoded.substring(0, 50));
                 
-                // Paso 2: Decodificar Base64
-                const base64Decoded = atob(cleanParam);
-                console.log('🔓 Base64 decodificado exitosamente');
+                let jsonString = '';
                 
-                // Paso 3: Decodificar URI (método más compatible)
-                let jsonString;
-                try {
-                    // Método moderno
-                    jsonString = decodeURIComponent(base64Decoded);
-                } catch (e) {
-                    console.log('⚠️ Método moderno falló, usando método clásico');
-                    // Método clásico para navegadores antiguos
-                    jsonString = decodeURIComponent(escape(base64Decoded));
+                // ✅ Probar diferentes métodos de decodificación URI
+                const decodeMethods = [
+                    () => decodeURIComponent(base64Decoded),
+                    () => decodeURIComponent(escape(base64Decoded)),
+                    () => base64Decoded, // Sin decodificar URI
+                    () => unescape(decodeURIComponent(base64Decoded))
+                ];
+                
+                let methodWorked = false;
+                for (let i = 0; i < decodeMethods.length; i++) {
+                    try {
+                        console.log(`🧪 Probando método de decodificación ${i + 1}...`);
+                        jsonString = decodeMethods[i]();
+                        
+                        // ✅ Validar que se ve como JSON
+                        if (jsonString.startsWith('{') && jsonString.endsWith('}')) {
+                            console.log(`✅ Método ${i + 1} parece exitoso`);
+                            methodWorked = true;
+                            break;
+                        } else {
+                            console.log(`❌ Método ${i + 1} no produce JSON válido`);
+                        }
+                    } catch (e) {
+                        console.log(`❌ Método ${i + 1} falló:`, e.message);
+                    }
                 }
                 
-                console.log('🔗 URI decodificado exitosamente');
-                console.log('📄 JSON string preview:', jsonString.substring(0, 100) + '...');
+                if (!methodWorked) {
+                    console.log('❌ Todos los métodos de decodificación fallaron');
+                    return false;
+                }
                 
-                // Paso 4: Parsear JSON
-                decodedDedications = JSON.parse(jsonString);
-                console.log('📋 JSON parseado exitosamente');
+                console.log('📄 String final para parsear:', jsonString.substring(0, 100) + '...');
                 
-                // Paso 5: Validar estructura
+                // ✅ Parsear JSON con validación extra
+                try {
+                    // Limpiar caracteres problemáticos antes de parsear
+                    const cleanJson = jsonString
+                        .replace(/[\u0000-\u0019\u007f-\u009f]/g, '') // Quitar caracteres de control
+                        .trim();
+                    
+                    console.log('🧹 JSON limpiado, intentando parsear...');
+                    decodedDedications = JSON.parse(cleanJson);
+                    console.log('🎉 JSON parseado exitosamente!');
+                    
+                } catch (jsonError) {
+                    console.error('❌ Error parseando JSON:', jsonError.message);
+                    console.log('🔍 JSON problemático:', jsonString);
+                    
+                    // ✅ Último intento: parsear manualmente casos simples
+                    try {
+                        console.log('🔧 Intentando reparación automática de JSON...');
+                        const repairedJson = jsonString
+                            .replace(/'/g, '"') // Comillas simples a dobles
+                            .replace(/,\s*}/g, '}') // Comas finales
+                            .replace(/,\s*]/g, ']'); // Comas finales en arrays
+                        
+                        decodedDedications = JSON.parse(repairedJson);
+                        console.log('🎉 JSON reparado y parseado!');
+                    } catch (repairError) {
+                        console.error('❌ Reparación automática falló:', repairError.message);
+                        return false;
+                    }
+                }
+                
+                // ✅ Validar estructura de datos
                 if (typeof decodedDedications === 'object' && decodedDedications !== null) {
                     const keys = Object.keys(decodedDedications);
                     console.log('🎵 Canciones encontradas:', keys.length);
                     
                     if (keys.length > 0) {
-                        // ✅ CRÍTICO: Sobrescribir dedicatorias existentes
-                        songDedications = decodedDedications;
-                        console.log('✅ Dedicatorias cargadas y aplicadas:', keys);
-                        
-                        // Forzar actualización inmediata
-                        setTimeout(() => {
-                            if (isExpanded) {
-                                updateDedicationPanel();
+                        // ✅ Validar que cada canción tenga la estructura correcta
+                        let validSongs = 0;
+                        for (const key of keys) {
+                            const dedication = decodedDedications[key];
+                            if (dedication && dedication.title && dedication.lines && Array.isArray(dedication.lines)) {
+                                validSongs++;
                             }
-                        }, 100);
+                        }
                         
-                        // Mostrar confirmación
-                        setTimeout(() => {
-                            alert('💕 ¡Dedicatoria personalizada cargada!\n\n🎵 Disfruta tu música especial');
-                        }, 1000);
+                        console.log('✅ Canciones válidas:', validSongs, 'de', keys.length);
                         
-                        return true;
-                    } else {
-                        console.log('⚠️ No se encontraron canciones en los datos');
+                        if (validSongs > 0) {
+                            // ✅ APLICAR dedicatorias
+                            songDedications = decodedDedications;
+                            console.log('🎵 Dedicatorias aplicadas exitosamente');
+                            
+                            // Forzar actualización
+                            setTimeout(() => {
+                                if (isExpanded) {
+                                    updateDedicationPanel();
+                                }
+                            }, 200);
+                            
+                            // Confirmación
+                            setTimeout(() => {
+                                alert(`💕 ¡Dedicatoria cargada exitosamente!\n\n🎵 ${validSongs} canción(es) personalizada(s)`);
+                            }, 1000);
+                            
+                            return true;
+                        }
                     }
-                } else {
-                    console.log('⚠️ Estructura de datos inválida');
                 }
                 
             } catch (decodeError) {
-                console.error('❌ Error en decodificación:', decodeError);
-                console.log('📋 Parámetro problemático:', dedicationsParam.substring(0, 50) + '...');
+                console.error('❌ Error en decodificación completa:', decodeError);
             }
             
         } catch (mainError) {
-            console.error('❌ Error general:', mainError);
+            console.error('❌ Error principal:', mainError);
         }
         
-        console.log('🔄 Continuando con dedicatorias por defecto');
+        console.log('🔄 Continuando sin dedicatorias compartidas');
         return false;
         
-    }, 100); // Menos delay para carga más rápida
+    }, 200);
 }
+
 
 
 
@@ -1032,6 +1094,7 @@ function toggleExpanded() {
 
 
         window.onload = initPlayer;
+
 
 
 
