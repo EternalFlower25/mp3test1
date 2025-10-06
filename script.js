@@ -591,24 +591,22 @@ function updateDedicationPanel() {
     
     const dedication = getCurrentDedication();
     
-    // Actualizar título y subtítulo para la canción actual
+    // Actualizar título y subtítulo
     document.getElementById('dedicationTitle').value = dedication.title;
     document.querySelector('.dedication-subtitle').textContent = dedication.subtitle;
     
-    // Calcular timing
-    const timing = calculateDedicationTiming();
     const currentDedicationIndex = getCurrentDedicationIndex();
     
-    // Actualizar líneas con estado
+    // ✅ NUEVO: Mostrar líneas sin timing, solo texto
     const linesContainer = document.getElementById('dedicationLines');
     linesContainer.innerHTML = '';
     
-    timing.forEach((item, index) => {
+    dedication.lines.forEach((text, index) => {
         const lineElement = document.createElement('div');
         lineElement.className = 'dedication-line';
-        lineElement.textContent = item.text;
+        lineElement.textContent = text; // ✅ Solo el texto, sin tiempo
         
-        // Agregar clases según el estado
+        // Agregar clases según el estado (basado en tiempo real de canción)
         if (index < currentDedicationIndex) {
             lineElement.classList.add('passed');
         } else if (index === currentDedicationIndex) {
@@ -617,12 +615,7 @@ function updateDedicationPanel() {
             lineElement.classList.add('next');
         }
         
-        // Mostrar tiempo estimado
-        const timeSpan = document.createElement('span');
-        timeSpan.className = 'dedication-time';
-        timeSpan.textContent = formatTime(item.time);
-        lineElement.appendChild(timeSpan);
-        
+        // ✅ SIN mostrar tiempo - solo el texto limpio
         linesContainer.appendChild(lineElement);
     });
     
@@ -632,6 +625,7 @@ function updateDedicationPanel() {
         currentLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 }
+
 
 
 function editDedication() {
@@ -761,69 +755,20 @@ function loadDedicationsFromUrl() {
             console.log('📥 Parámetro encontrado, longitud:', dedicationsParam.length);
             
             try {
-                // Decodificar base64
+                // ✅ NUEVA decodificación que coincide con la codificación
                 const base64Decoded = atob(dedicationsParam);
-                console.log('✅ Base64 decodificado');
+                const jsonString = decodeURIComponent(base64Decoded);
+                console.log('✅ Decodificación exitosa');
                 
-                // Decodificar URI con múltiples métodos
-                let jsonString = '';
-                const methods = [
-                    () => decodeURIComponent(base64Decoded),
-                    () => decodeURIComponent(escape(base64Decoded)),
-                    () => base64Decoded
-                ];
-                
-                for (let i = 0; i < methods.length; i++) {
-                    try {
-                        jsonString = methods[i]();
-                        if (jsonString.startsWith('{') && jsonString.endsWith('}')) {
-                            console.log(`✅ Método ${i + 1} exitoso`);
-                            break;
-                        }
-                    } catch (e) {
-                        console.log(`❌ Método ${i + 1} falló`);
-                    }
-                }
-                
-                if (!jsonString.startsWith('{')) {
-                    console.log('❌ No se pudo decodificar correctamente');
-                    return false;
-                }
-                
-                // Parsear JSON
                 const decodedData = JSON.parse(jsonString);
                 console.log('🎉 JSON parseado exitosamente');
                 
-                // ✅ NUEVO: Convertir formato comprimido a formato normal
-                const normalizedDedications = {};
-                
-                Object.keys(decodedData).forEach(songId => {
-                    const data = decodedData[songId];
-                    
-                    // ✅ Detectar si es formato comprimido (t, s, l) o normal (title, subtitle, lines)
-                    if (data.t && data.s && data.l) {
-                        // Formato comprimido - convertir a normal
-                        console.log('🔧 Convirtiendo formato comprimido para:', songId);
-                        normalizedDedications[songId] = {
-                            title: data.t,
-                            subtitle: data.s,
-                            lines: data.l
-                        };
-                    } else if (data.title && data.subtitle && data.lines) {
-                        // Formato normal - usar directamente
-                        console.log('📋 Usando formato normal para:', songId);
-                        normalizedDedications[songId] = data;
-                    } else {
-                        console.log('⚠️ Formato desconocido para:', songId, data);
-                    }
-                });
-                
-                const validKeys = Object.keys(normalizedDedications);
-                console.log('🎵 Dedicatorias procesadas:', validKeys.length);
+                const validKeys = Object.keys(decodedData);
+                console.log('🎵 Dedicatorias encontradas:', validKeys.length);
                 
                 if (validKeys.length > 0) {
-                    // ✅ APLICAR dedicatorias normalizadas
-                    songDedications = normalizedDedications;
+                    // ✅ Aplicar directamente (ya no hay formato comprimido)
+                    songDedications = decodedData;
                     console.log('🎵 Dedicatorias aplicadas exitosamente');
                     
                     // Actualizar pantalla
@@ -873,53 +818,45 @@ function generateShareableLink() {
     }
     
     try {
-        // ✅ NUEVA: Comprimir dedicatorias eliminando texto redundante
-        const compressedDedications = {};
+        // ✅ NUEVO: Sin compresión - usar formato completo
+        const dedicationsToShare = {};
         
         Object.keys(songDedications).forEach(songId => {
-            const dedication = songDedications[songId];
+            const original = songDedications[songId];
             
-            // Comprimir eliminando líneas muy largas y acortando texto
-            const compressedLines = dedication.lines
-                .map(line => {
-                    // Acortar líneas muy largas
-                    if (line.length > 50) {
-                        return line.substring(0, 47) + '...';
-                    }
-                    return line;
-                })
-                .slice(0, 8); // Máximo 8 líneas
-            
-            compressedDedications[songId] = {
-                t: dedication.title.substring(0, 30), // Título corto
-                s: dedication.subtitle.substring(0, 20), // Subtítulo corto  
-                l: compressedLines
+            // ✅ Sin límites de caracteres - todo completo
+            dedicationsToShare[songId] = {
+                title: original.title,      // Sin acortar
+                subtitle: original.subtitle, // Sin acortar
+                lines: original.lines       // Todas las líneas sin acortar
             };
         });
         
-        // Codificar versión comprimida
-        const dedicationsString = JSON.stringify(compressedDedications);
-        console.log('📝 JSON comprimido:', dedicationsString.length, 'caracteres');
+        const dedicationsString = JSON.stringify(dedicationsToShare);
+        console.log('📝 JSON completo:', dedicationsString.length, 'caracteres');
         
-        const dedicationsEncoded = btoa(unescape(encodeURIComponent(dedicationsString)));
+        // ✅ NUEVA codificación más robusta
+        const dedicationsEncoded = btoa(encodeURIComponent(dedicationsString));
+        console.log('🔐 Codificación exitosa:', dedicationsEncoded.length, 'caracteres');
+        
         const baseUrl = window.location.origin + window.location.pathname;
         const shareableUrl = `${baseUrl}?d=${dedicationsEncoded}`;
+        console.log('🔗 URL final:', shareableUrl.length, 'caracteres totales');
         
-        console.log('🔗 URL final:', shareableUrl.length, 'caracteres');
-        
-        // Verificar longitud
-        if (shareableUrl.length > 2000) {
-            alert('⚠️ La dedicatoria sigue siendo muy larga.\nIntenta escribir mensajes más cortos.');
-            return;
+        // ✅ Límite más generoso (8000 chars es límite práctico de URLs)
+        if (shareableUrl.length > 8000) {
+            const shouldContinue = confirm('⚠️ La URL es muy larga (puede no funcionar en algunos dispositivos).\n\n¿Continuar anyway?');
+            if (!shouldContinue) return;
         }
         
         showShareModal(shareableUrl);
         
     } catch (error) {
         console.error('❌ Error generando enlace:', error);
-        alert(`❌ Error: ${error.message}`);
+        alert(`❌ Error al generar enlace: ${error.message}`);
     }
 }
+
 
 
 
@@ -1054,6 +991,7 @@ function toggleExpanded() {
 
 
         window.onload = initPlayer;
+
 
 
 
