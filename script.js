@@ -780,7 +780,7 @@ function loadDedicationsFromUrl() {
                     
                     // Mostrar confirmación
                     setTimeout(() => {
-                        alert(`💕 ¡Te quiero mucho :3!\n\n🎵 ${validKeys.length}`);
+                        alert(`💕 ¡Te quiero mucho :3!\n\n`);
                     }, 1000);
                     
                     return true;
@@ -991,6 +991,7 @@ function toggleExpanded() {
 
 
         window.onload = initPlayer;
+
 
 
 
