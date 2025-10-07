@@ -717,7 +717,7 @@ function saveDedication() {
         // Cerrar modal
         closeDedicationModal();
         
-        alert(`💕 Dedicatoria guardada para "${songs[currentTrack].title}"!\n\nCada canción ahora puede tener su propia dedicatoria única.`);
+        alert(`💕 Dedicatoria guardada para "${songs[currentTrack].title}"!\n\n.`);
     } else {
         alert('⚠️ Por favor completa al menos el título y una frase.');
     }
@@ -991,6 +991,7 @@ function toggleExpanded() {
 
 
         window.onload = initPlayer;
+
 
 
 
